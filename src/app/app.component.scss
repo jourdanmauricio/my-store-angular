@@ -1,0 +1,9 @@
+.message-error {
+  background-color: red;
+  color: white;
+  opacity: 0;
+  transition: all linear 0.5s;
+  &.invalid {
+    opacity: 1;
+  }
+}
