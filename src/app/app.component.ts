@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { Product } from './models/product.model';
+import { AuthService } from './services/auth.service';
+import { UsersService } from './services/users.service';
 
 @Component({
   selector: 'app-root',
@@ -7,16 +8,31 @@ import { Product } from './models/product.model';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  name = 'Tigui';
-  age = 18;
-  person = {
-    name: 'Tigui',
-    age: 18,
-  };
-
   imgParent = 'https://picsum.photos/200';
+
+  constructor(
+    private authService: AuthService,
+    private usersService: UsersService
+  ) {}
 
   onLoaded(imgUrl: string) {
     console.log('LOG EN PADRE', imgUrl);
+  }
+
+  createUser() {
+    this.usersService
+      .create({
+        name: 'Catalina',
+        email: 'catalina@gmail.com',
+        password: '121212',
+      })
+      .subscribe((rta) => {
+        console.log('Rta', rta);
+      });
+  }
+  login() {
+    this.authService.login('catalina@gmail.com', '121212').subscribe((rta) => {
+      console.log('Rta', rta.access_token);
+    });
   }
 }

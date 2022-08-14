@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { switchMap } from 'rxjs/operators';
+import { zip } from 'rxjs';
 import {
   Product,
   createProductDto,
@@ -18,6 +20,9 @@ export class ProductsComponent implements OnInit {
   total = 0;
   showProductDetail = false;
   productChosen!: Product;
+  limit = 10;
+  offset = 0;
+  statusDetail: 'loading' | 'success' | 'error' | 'init' = 'init';
 
   constructor(
     private storeService: StoreService,
@@ -27,9 +32,16 @@ export class ProductsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.productsService.getAllProducts().subscribe((data) => {
-      this.products = data;
-    });
+    this.loadMore();
+  }
+
+  loadMore() {
+    this.productsService
+      .getAllProducts(this.limit, this.offset)
+      .subscribe((data) => {
+        this.products = [...this.products, ...data];
+        this.offset += this.limit;
+      });
   }
 
   onAddToShoppingCart(product: Product) {
@@ -42,9 +54,29 @@ export class ProductsComponent implements OnInit {
   }
 
   onShowDetail(id: string) {
-    this.productsService.getProduct(id).subscribe((data) => {
-      this.toggleProductDetail();
-      this.productChosen = data;
+    this.statusDetail = 'loading';
+    this.toggleProductDetail();
+    // this.productsService.getProduct(id).subscribe(
+    //   (data) => {
+    //     this.productChosen = data;
+    //     this.statusDetail = 'success';
+    //   },
+    //   (errorMsg) => {
+    //     window.alert(errorMsg);
+    //     console.error(errorMsg);
+    //     this.statusDetail = 'error';
+    //   }
+    // );
+    this.productsService.getProduct(id).subscribe({
+      next: (data) => {
+        this.productChosen = data;
+        this.statusDetail = 'success';
+      },
+      error: (errorMsg) => {
+        window.alert(errorMsg);
+        console.error(errorMsg);
+        this.statusDetail = 'error';
+      },
     });
   }
 
@@ -71,5 +103,60 @@ export class ProductsComponent implements OnInit {
       this.products[productIndex] = data;
       this.toggleProductDetail();
     });
+  }
+
+  deleteProduct() {
+    const id = this.productChosen.id;
+    this.productsService.delete(id).subscribe(() => {
+      const productIndex = this.products.findIndex((item) => item.id === id);
+      this.products.splice(productIndex, 1);
+      this.toggleProductDetail();
+    });
+  }
+
+  readAndUpdate(id: string) {
+    // Callback Hell
+    // this.productsService.getProduct(id).subscribe((data) => {
+    //   const product = data;
+    //   this.productsService
+    //     .update(product.id, { title: 'New title' })
+    //     .subscribe((rtaUpdate) => {
+    //       console.log('rtaUpdate', rtaUpdate);
+    //     });
+    // });
+
+    // La lógica debería estar en el servicio
+    // Dependencia del result anterior
+    // this.productsService
+    //   .getProduct(id)
+    //   .pipe(
+    //     switchMap((product) =>
+    //       this.productsService.update(product.id, { title: 'New title' })
+    //     ),
+    //     switchMap((product) =>
+    //       this.productsService.update(product.id, { price: 0 })
+    //     )
+    //   )
+    //   .subscribe((data) => {
+    //     console.log('data', data);
+    //   });
+
+    // // En paralelo
+    // zip(
+    //   this.productsService.getProduct(id),
+    //   this.productsService.update(id, { title: 'New title' }),
+    //   this.productsService.update(id, { price: 0 })
+    // ).subscribe((response) => {
+    //   const product = response[0];
+    //   const productTitle = response[1];
+    //   const productPrice = response[2];
+    // });
+
+    this.productsService
+      .fetchReadAndUpdate(id, { title: 'New title' })
+      .subscribe((response) => {
+        const product = response[0];
+        const productTitle = response[1];
+      });
   }
 }

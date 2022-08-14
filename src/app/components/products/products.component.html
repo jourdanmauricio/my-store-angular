@@ -1,13 +1,17 @@
 <button (click)="createNewProduct()">Create</button>
+<button (click)="onShowDetail('121212')">Detelle not found</button>
 <div class="products--grid">
   <app-product [product]="product" (addedProduct)="onAddToShoppingCart($event)" (showProduct)="onShowDetail($event)"
     *ngFor="let product of products">
   </app-product>
+  <button (click)="loadMore()">Load more</button>
 </div>
 
 <div class="product-detail" [class.active]="showProductDetail">
+  {{ statusDetail }}
+  <!-- *ngIf loading -> cargar loading sino datos. si Error -> alert -->
+  <button (click)="toggleProductDetail()">Close</button>
   <div *ngIf="productChosen">
-    <button (click)="toggleProductDetail()">Close</button>
     <h1>{{ productChosen.title }}</h1>
     <swiper [slidesPerView]="1">
       <ng-template swiperSlide *ngFor="let img of productChosen.images">
@@ -16,5 +20,6 @@
     </swiper>
     <p>{{ productChosen.description}}</p>
     <button (click)="updateProduct()">Editar</button>
+    <button (click)="deleteProduct()">Eliminar</button>
   </div>
 </div>

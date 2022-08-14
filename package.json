@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "start:proxy": "ng serve --proxy-config ./proxy.config.json",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint"
