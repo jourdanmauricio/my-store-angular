@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AuthService } from './services/auth.service';
 import { UsersService } from './services/users.service';
+import { FilesService } from './services/files.service';
 
 @Component({
   selector: 'app-root',
@@ -10,9 +11,10 @@ import { UsersService } from './services/users.service';
 export class AppComponent {
   imgParent = 'https://picsum.photos/200';
   token: string = '';
+  imgRta = '';
 
   constructor(
-    private authService: AuthService,
+    private filesService: FilesService,
     private usersService: UsersService
   ) {}
 
@@ -32,15 +34,23 @@ export class AppComponent {
       });
   }
 
-  // login() {
-  //   this.authService.login('catalina@gmail.com', '121212').subscribe((rta) => {
-  //     this.token = rta.access_token;
-  //   });
-  // }
+  downloadPdf() {
+    this.filesService
+      .getFile(
+        'my.pdf',
+        'https://young-sands-07814.herokuapp.com/api/files/dummy.pdf',
+        'application/pdf'
+      )
+      .subscribe();
+  }
 
-  // getProfile() {
-  //   this.authService.profile(this.token).subscribe((profile) => {
-  //     console.log('profile', profile);
-  //   });
-  // }
+  onUpload(event: Event) {
+    const element = event.target as HTMLInputElement;
+    const file = element.files?.item(0);
+    if (file) {
+      this.filesService.uploadFile(file).subscribe((rta) => {
+        this.imgRta = rta.location;
+      });
+    }
+  }
 }
