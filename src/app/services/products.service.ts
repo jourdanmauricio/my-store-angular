@@ -8,6 +8,7 @@ import {
 import { environment } from 'src/environments/environment';
 import { catchError, map } from 'rxjs/operators';
 import { throwError, zip } from 'rxjs';
+import { checkTime } from '../interceptors/time.interceptor';
 import {
   Product,
   createProductDto,
@@ -28,13 +29,15 @@ export class ProductsService {
       params = params.set('limit', limit);
       params = params.set('offset', offset);
     }
-    return this.http.get<Product[]>(this.apiUrl, { params }).pipe(
-      map((products) =>
-        products.map((item) => {
-          return { ...item, taxes: 0.21 * item.price };
-        })
-      )
-    );
+    return this.http
+      .get<Product[]>(this.apiUrl, { params, context: checkTime() })
+      .pipe(
+        map((products) =>
+          products.map((item) => {
+            return { ...item, taxes: 0.21 * item.price };
+          })
+        )
+      );
   }
 
   getProduct(id: string) {
