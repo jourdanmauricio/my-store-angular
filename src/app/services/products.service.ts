@@ -22,7 +22,7 @@ export class ProductsService {
   private apiUrl = `${environment.API_URL}/api`;
   constructor(private http: HttpClient) {}
 
-  getAllProducts(limit?: number, offset?: number) {
+  getAll(limit?: number, offset?: number) {
     let params = new HttpParams();
     if (limit !== undefined && offset !== undefined) {
       params = params.set('limit', limit);
@@ -55,7 +55,7 @@ export class ProductsService {
     );
   }
 
-  getProduct(id: string) {
+  getOne(id: string) {
     return this.http.get<Product>(`${this.apiUrl}/products/${id}`).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === HttpStatusCode.InternalServerError) {
@@ -73,7 +73,7 @@ export class ProductsService {
   }
 
   fetchReadAndUpdate(id: string, dto: updateProductDto) {
-    return zip(this.getProduct(id), this.update(id, dto));
+    return zip(this.getOne(id), this.update(id, dto));
   }
 
   create(dto: createProductDto) {

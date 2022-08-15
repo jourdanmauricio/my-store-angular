@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Product } from 'src/app/models/product.model';
-import { ProductsService } from '../../services/products.service';
+import { ProductsService } from '../../../services/products.service';
 import { switchMap } from 'rxjs';
 
 @Component({
@@ -16,6 +16,7 @@ export class CategoryComponent implements OnInit {
   products: Product[] = [];
   limit = 10;
   offset = 0;
+  productId: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -39,6 +40,9 @@ export class CategoryComponent implements OnInit {
       )
       .subscribe((data) => {
         this.products = data;
+        this.route.queryParamMap.subscribe((params) => {
+          this.productId = params.get('product');
+        });
       });
   }
 

@@ -14,7 +14,13 @@ import { ProductsService } from 'src/app/services/products.service';
 })
 export class ProductsComponent {
   @Input() products: Product[] = [];
-
+  // @Input() productId: string | null = null;
+  @Input()
+  set productId(id: string | null) {
+    if (id) {
+      this.onShowDetail(id);
+    }
+  }
   @Output() loadMore: EventEmitter<string> = new EventEmitter<string>();
 
   myShoppingCart: Product[] = [];
@@ -45,19 +51,11 @@ export class ProductsComponent {
 
   onShowDetail(id: string) {
     this.statusDetail = 'loading';
-    this.toggleProductDetail();
-    // this.productsService.getProduct(id).subscribe(
-    //   (data) => {
-    //     this.productChosen = data;
-    //     this.statusDetail = 'success';
-    //   },
-    //   (errorMsg) => {
-    //     window.alert(errorMsg);
-    //     console.error(errorMsg);
-    //     this.statusDetail = 'error';
-    //   }
-    // );
-    this.productsService.getProduct(id).subscribe({
+    if (!this.showProductDetail) {
+      this.showProductDetail = true;
+    }
+    //  this.toggleProductDetail();
+    this.productsService.getOne(id).subscribe({
       next: (data) => {
         this.productChosen = data;
         this.statusDetail = 'success';
@@ -106,7 +104,7 @@ export class ProductsComponent {
 
   readAndUpdate(id: string) {
     // Callback Hell
-    // this.productsService.getProduct(id).subscribe((data) => {
+    // this.productsService.getOne(id).subscribe((data) => {
     //   const product = data;
     //   this.productsService
     //     .update(product.id, { title: 'New title' })
@@ -118,7 +116,7 @@ export class ProductsComponent {
     // La lógica debería estar en el servicio
     // Dependencia del result anterior
     // this.productsService
-    //   .getProduct(id)
+    //   .getOne(id)
     //   .pipe(
     //     switchMap((product) =>
     //       this.productsService.update(product.id, { title: 'New title' })
@@ -133,7 +131,7 @@ export class ProductsComponent {
 
     // // En paralelo
     // zip(
-    //   this.productsService.getProduct(id),
+    //   this.productsService.getOne(id),
     //   this.productsService.update(id, { title: 'New title' }),
     //   this.productsService.update(id, { price: 0 })
     // ).subscribe((response) => {
