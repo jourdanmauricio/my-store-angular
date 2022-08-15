@@ -9,6 +9,7 @@ import { UsersService } from './services/users.service';
 })
 export class AppComponent {
   imgParent = 'https://picsum.photos/200';
+  token: string = '';
 
   constructor(
     private authService: AuthService,
@@ -30,9 +31,16 @@ export class AppComponent {
         console.log('Rta', rta);
       });
   }
-  login() {
-    this.authService.login('catalina@gmail.com', '121212').subscribe((rta) => {
-      console.log('Rta', rta.access_token);
-    });
-  }
+
+  // login() {
+  //   this.authService.login('catalina@gmail.com', '121212').subscribe((rta) => {
+  //     this.token = rta.access_token;
+  //   });
+  // }
+
+  // getProfile() {
+  //   this.authService.profile(this.token).subscribe((profile) => {
+  //     console.log('profile', profile);
+  //   });
+  // }
 }
