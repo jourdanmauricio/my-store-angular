@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Auth } from '../models/auth.model';
 import { User } from '../models/user.model';
-import { switchMap, tap } from 'rxjs';
+import { BehaviorSubject, switchMap, tap } from 'rxjs';
 import { TokenService } from './token.service';
 
 @Injectable({
@@ -12,6 +12,10 @@ import { TokenService } from './token.service';
 export class AuthService {
   private apiUrl = `${environment.API_URL}/api/auth`;
   token = '';
+
+  private user = new BehaviorSubject<User | null>(null);
+
+  user$ = this.user.asObservable();
 
   constructor(private http: HttpClient, private tokenService: TokenService) {}
 
@@ -24,12 +28,16 @@ export class AuthService {
   }
 
   getProfile() {
-    return this.http.get<User>(`${this.apiUrl}/profile`);
+    return this.http
+      .get<User>(`${this.apiUrl}/profile`)
+      .pipe(tap((user) => this.user.next(user)));
   }
 
-  loginAndGetProfile() {
-    return this.login('catalina@gmail.com', '121212').pipe(
-      switchMap(() => this.getProfile())
-    );
+  loginAndGetProfile(user: string, password: string) {
+    return this.login(user, password).pipe(switchMap(() => this.getProfile()));
+  }
+
+  logout() {
+    this.tokenService.removeToken();
   }
 }

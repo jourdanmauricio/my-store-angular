@@ -21,6 +21,7 @@
     "@angular/platform-browser-dynamic": "^14.1.0",
     "@angular/router": "^14.1.0",
     "file-server": "^2.2.0",
+    "ngx-quicklink": "^0.3.0",
     "rxjs": "~7.5.0",
     "swiper": "^8.3.2",
     "tslib": "^2.3.0",
